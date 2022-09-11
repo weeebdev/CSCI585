@@ -23,7 +23,12 @@ def conv_naive(image, kernel):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    for i in range(Hi):
+        for j in range(Wi):
+            for k in range(Hk):
+                for l in range(Wk):
+                    if i+k-Hk//2 >= 0 and i+k-Hk//2 < Hi and j+l-Wk//2 >= 0 and j+l-Wk//2 < Wi:
+                        out[i, j] += image[i+k-Hk//2, j+l-Wk//2] * kernel[k, l]
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -54,7 +59,8 @@ def zero_pad(image, pad_height, pad_width):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    out = np.zeros((H+2*pad_height, W+2*pad_width))
+    out[pad_height:H+pad_height, pad_width:W+pad_width] = image
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -87,7 +93,11 @@ def conv_fast(image, kernel):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    image = zero_pad(image, Hk//2, Wk//2)
+    kernel = np.flip(np.flip(kernel, 0), 1)
+    for i in range(Hi):
+        for j in range(Wi):
+            out[i, j] = np.sum(image[i:i+Hk, j:j+Wk] * kernel)
     ######################################
     #        END OF YOUR CODE            #
     ######################################

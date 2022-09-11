@@ -22,7 +22,7 @@ def load(image_path):
     #       START YOUR CODE HERE        #
     #####################################
     # Use skimage io.imread
-    pass
+    out = io.imread(image_path)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -46,7 +46,9 @@ def change_value(image):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    normalize = np.vectorize(lambda x: x / 255)
+    changeValue = np.vectorize(lambda x: 0.5 * x ** 2)
+    out = changeValue(normalize(image))
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -68,7 +70,7 @@ def convert_to_grey_scale(image):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    out = color.rgb2gray(image)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -87,7 +89,7 @@ def rgb_decomposition(image, channel):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    out = np.where([channel == 'R', channel == 'G', channel == 'B'], image, 0)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -110,7 +112,13 @@ def mix_images(image1, image2, channel1, channel2):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    if channel1 is not None:
+        image1 = rgb_decomposition(image1, channel1)
+    if channel2 is not None:
+        image2 = rgb_decomposition(image2, channel2)
+
+    out = np.concatenate(
+        (image1[:, :image1.shape[1] // 2], image2[:, image2.shape[1] // 2:]), axis=1)
     ######################################
     #        END OF YOUR CODE            #
     ######################################

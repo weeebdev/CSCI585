@@ -14,7 +14,7 @@ def dot_product(vector1, vector2):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    out = np.dot(vector1.T, vector2)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -36,7 +36,7 @@ def matrix_mult(M, vector1, vector2,vector3):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    out = np.multiply(np.dot(vector2.T, vector3), np.dot(M, vector1.T))
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -59,7 +59,7 @@ def svd(matrix):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    u, s, v = np.linalg.svd(matrix)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -80,7 +80,7 @@ def get_singular_values(matrix, n):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    singular_values = s[:n]
     ######################################
     #        END OF YOUR CODE            #
     ######################################
