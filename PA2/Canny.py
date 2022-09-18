@@ -32,7 +32,10 @@ def conv(image, kernel):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    kernel = np.flip(np.flip(kernel, 0), 1)
+    for i in range(Hi):
+        for j in range(Wi):
+            out[i, j] = np.sum(padded[i:i+Hk, j:j+Wk] * kernel)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -61,7 +64,9 @@ def gaussian_kernel(size, sigma):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    for i in range(size):
+        for j in range(size):
+            kernel[i][j] = (1/(2*np.pi*sigma**2))*np.exp(-((i-size//2)**2+(j-size//2)**2)/(2*sigma**2))
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -85,7 +90,8 @@ def partial_x(img):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    dx = np.array([[0.5, 0, -0.5]])
+    out = conv(img, dx)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -109,7 +115,8 @@ def partial_y(img):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    dy = np.array([[0.5, 0, -0.5]]).T
+    out = conv(img, dy)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -134,7 +141,12 @@ def gradient(img):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    G_x = partial_x(img)
+    G_y = partial_y(img)
+
+    G = np.sqrt(G_x**2 + G_y**2)
+
+    theta = np.rad2deg(np.arctan2(G_y, G_x) + np.pi) % 360
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -164,7 +176,21 @@ def non_maximum_suppression(G, theta):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    for i in range(1, H-1):
+        for j in range(1, W-1):
+            angle = theta[i, j] % 180
+            if angle == 0:
+                if G[i, j] >= G[i, j-1] and G[i, j] >= G[i, j+1]: 
+                    out[i, j] = G[i, j]
+            elif angle == 45:
+                if G[i, j] >= G[i+1, j+1] and G[i, j] >= G[i-1, j-1]:
+                    out[i, j] = G[i, j]
+            elif angle == 90:
+                if G[i, j] >= G[i-1, j] and G[i, j] >= G[i+1, j]:
+                    out[i, j] = G[i, j]
+            elif angle == 135:
+                if G[i, j] >= G[i-1, j+1] and G[i, j] >= G[i+1, j-1]:
+                    out[i, j] = G[i, j]
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -245,10 +271,14 @@ def link_edges(strong_edges, weak_edges):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-        
-    pass
-       
-    
+    while len(indices):
+        i, j = indices[0]
+        indices = indices[1:]
+        edges[i, j] = True
+        for (a, b) in get_neighbors(i, j, H, W):
+            if weak_edges[a, b] and not edges[a, b]:
+                indices = np.append(indices, [[a, b]], axis=0)
+                edges[a, b] = True
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -269,10 +299,15 @@ def canny_detector(img, kernel_size=5, sigma=1.4, high=20, low=15):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-        
-    pass
-       
-    
+    kernel = gaussian_kernel(kernel_size, sigma)
+    smoothed = conv(img, kernel)
+
+    G, theta = gradient(smoothed)
+
+    nms = non_maximum_suppression(G, theta)
+
+    strong_edges, weak_edges = double_thresholding(nms, high, low)
+    edges = link_edges(strong_edges, weak_edges)   
     ######################################
     #        END OF YOUR CODE            #
     ######################################
