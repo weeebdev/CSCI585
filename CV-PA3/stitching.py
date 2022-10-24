@@ -38,9 +38,20 @@ def harris_corners(img, window_size=3, k=0.04):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    
-    pass
-    
+    # step 2: compute products of derivatives at each pixel
+    Ixx = dx ** 2
+    Iyy = dy ** 2
+    Ixy = dx * dy
+
+    # step 3: compute matrix M for each pixel
+    Sxx = convolve(Ixx, window)
+    Syy = convolve(Iyy, window)
+    Sxy = convolve(Ixy, window)
+
+    # step 4: compute corner response
+    det = Sxx * Syy - Sxy ** 2
+    trace = Sxx + Syy
+    response = det - k * trace ** 2
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -67,12 +78,16 @@ def simple_descriptor(patch):
         feature: 1D array of shape (h * w)
     """
     feature = []
-    
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    
-    pass
+    # find mean and std
+    mean = np.mean(patch)
+    std = np.std(patch) 
+    # normalize the patch
+    patch = (patch - mean) / (std or 1)
+    # flatten the patch
+    feature = patch.flatten()
 
     ######################################
     #        END OF YOUR CODE            #
@@ -128,12 +143,17 @@ def match_descriptors(desc1, desc2, threshold=0.5):
     #       START YOUR CODE HERE        #
     #####################################
     
-    pass
+    # find the closest and second closest matches
+    closest = np.argsort(dists, axis=1)[:, 0]
+    second_closest = np.argsort(dists, axis=1)[:, 1]
+    # find the ratio of the distances
+    ratio = dists[np.arange(N), closest] / dists[np.arange(N), second_closest]
+    # find the matches
+    matches = np.array([np.arange(N), closest]).T[ratio < threshold]
 
     ######################################
     #        END OF YOUR CODE            #
     ######################################
-    
     return matches
 
 
@@ -160,7 +180,9 @@ def fit_affine_matrix(p1, p2):
     #       START YOUR CODE HERE        #
     #####################################
     
-    pass
+    #  solve for H using least squares
+    #  H should be a matrix of shape (P * P) that transform p2 to p1
+    H = np.linalg.lstsq(p2, p1, rcond=None)[0]
     
     ######################################
     #        END OF YOUR CODE            #
@@ -209,7 +231,23 @@ def ransac(keypoints1, keypoints2, matches, n_iters=200, threshold=20):
     #       START YOUR CODE HERE        #
     #####################################
     
-    pass
+    for _ in range(n_iters):
+        # select random set of matches
+        idx = np.random.choice(N, n_samples, replace=False)
+        # compute affine transformation matrix
+        H = np.linalg.lstsq(matched2[idx], matched1[idx], rcond=None)[0]
+        # compute inliers
+        inliers = np.linalg.norm(np.dot(matched2, H) - matched1, axis=1) < threshold
+        # keep the largest set of inliers
+        if np.sum(inliers) > n_inliers:
+            n_inliers = np.sum(inliers)
+            max_inliers = inliers
+    # re-compute least-squares estimate on all of the inliers
+    H = np.linalg.lstsq(matched2[max_inliers], matched1[max_inliers], rcond=None)[0]
+
+    # # Sometimes numerical issues cause least-squares to produce the last
+    # # column which is not exactly [0, 0, 1]
+    H[:,2] = np.array([0, 0, 1])
 
     ######################################
     #        END OF YOUR CODE            #
@@ -257,7 +295,17 @@ def hog_descriptor(patch, pixels_per_cell=(8,8)):
     #       START YOUR CODE HERE        #
     #####################################
     
-    pass
+    #  compute gradient histograms
+    for i in range(rows):
+        for j in range(cols):
+            #  compute histogram for each cell
+            hist, _ = np.histogram(theta_cells[i, j], bins=n_bins, range=(0, 180), weights=G_cells[i, j])
+            cells[i, j] = hist
+
+    #  normalize across block
+    cells /= np.linalg.norm(cells, axis=(1, 2), keepdims=True)
+    #  flattening block into a feature vector
+    block = cells.flatten()
     
     ######################################
     #        END OF YOUR CODE            #
