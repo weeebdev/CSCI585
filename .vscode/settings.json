@@ -2,4 +2,5 @@
   "wolf.disableHotModeWarning": true,
   "editor.formatOnSaveMode": "file",
   "editor.formatOnSave": false,
+  "python.analysis.typeCheckingMode": "basic",
 }
