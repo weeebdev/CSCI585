@@ -35,6 +35,7 @@ H \times H^T = \begin{bmatrix}
 $$
 
 ### Question 3.
+Did not understand the topic.
 
 ### Question 4.
 $$
@@ -47,14 +48,20 @@ $$
 
 ### Question 5.
 $$
-\^{x} = xcox(\theta) - ysin(\theta) \\
+\^{x} = xcos(\theta) - ysin(\theta) \\
 \^{y} = xsin(\theta) + ycos(\theta) \\
-I(\^{x},\^{y}) = I(xcos(\theta) - ysin(\theta), xsin(\theta) + ycos(\theta)) \\
-I'\^{x} = Ixcos(\theta) + Iysin(\theta) \\
-I'\^{y} = -Ixsin(\theta) + Iycos(\theta) \\
+I_{\^{x}} = \frac{d(\^{x}+\^{y})}{dx} = I_xcos(\theta) + I_ysin(\theta) \\
+I_{\^{y}} = \frac{d(\^{x}+\^{y})}{dy} = -I_xsin(\theta) + I_ycos(\theta) \\
+\sqrt{I_{x}^2+I_{y}^2} = \sqrt{I_{\^{x}}^2+I_{\^{y}}^2} \\
+I_{x}^2+I_{y}^2 = I_{\^{x}}^2+I_{\^{y}}^2 \\
+I_{\^{x}}^2+I_{\^{y}}^2 = ((I_xcos(\theta) + I_ysin(\theta))^2 +(-I_xsin(\theta) + I_ycos(\theta))^2 = \\
 I_x^2cos^2(\theta) + I_y^2sin^2(\theta) + 2I_xI_ycos(\theta)sin(\theta) + I_x^2sin^2(\theta) + I_y^2cos^2(\theta) - 2I_xI_ycos(\theta)sin(\theta) = \\
+I_x^2cos^2(\theta) + I_y^2sin^2(\theta) + I_x^2sin^2(\theta) + I_y^2cos^2(\theta) = \\
+I_x^2(cos^2(\theta) + sin^2(\theta)) + I_y^2(cos^2(\theta) + sin^2(\theta)) = \\
 I_x^2 + I_y^2
 $$
 
 ### Question 6.
 - a. Use Gaussian filter to get smooth copy, then subtract it from original image
+- b. The derivative of Gaussian filter is used for noise suppression, while the difference of Gaussian filter is used for edge detection
+- c. Did not understand the topic.
