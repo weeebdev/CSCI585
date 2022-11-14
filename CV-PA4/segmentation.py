@@ -40,7 +40,20 @@ def kmeans(features, k, num_iters=100):
         #####################################
         #       START YOUR CODE HERE        #
         #####################################
-        pass
+        # Create a new assingments array
+        new_assignments = np.zeros(N)
+        # Assign each point to the closest center
+        for i in range(N):
+            dist = np.sqrt(np.sum((features[i] - centers)**2, axis=1))
+            new_assignments[i] = np.argmin(dist)
+        # Compute new center of each cluster
+        for i in range(k):
+            centers[i] = np.mean(features[new_assignments == i], axis=0)
+        # Stop if cluster assignments did not change
+        if np.all(assignments == new_assignments):
+            break
+        assignments = new_assignments
+        # Go to step 2
         ######################################
         #        END OF YOUR CODE            #
         ######################################
@@ -80,7 +93,18 @@ def kmeans_fast(features, k, num_iters=100):
         #####################################
         #       START YOUR CODE HERE        #
         #####################################
-        pass
+        # Create a new assingments array
+        new_assignments = np.zeros(N)
+        # Do vectorization and broadcasting to speed up the first part of kmeans algorithm
+        dist = np.sqrt(np.sum((features[:, np.newaxis] - centers)**2, axis=2))
+        new_assignments = np.argmin(dist, axis=1)
+        # Compute new center of each cluster
+        for i in range(k):
+            centers[i] = np.mean(features[new_assignments == i], axis=0)
+        # Stop if cluster assignments did not change
+        if np.all(assignments == new_assignments):
+            break
+        assignments = new_assignments
         ######################################
         #        END OF YOUR CODE            #
         ######################################
@@ -105,7 +129,7 @@ def color_features(img):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    features = img.reshape(H*W, C)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -138,7 +162,12 @@ def color_position_features(img):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    # Create a grid of xy coordinates
+    x, y = np.mgrid[0:H, 0:W]
+    # Combine pixel's RGB value and xy coordinates into a feature vector
+    features = np.dstack((color, x, y)).reshape(H*W, C+2)
+    # Normalize features
+    features = (features - np.mean(features, axis=0)) / np.std(features, axis=0)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -168,7 +197,7 @@ def compute_accuracy(mask_gt, mask):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    accuracy = np.sum(mask_gt == mask) / mask.size
     ######################################
     #        END OF YOUR CODE            #
     ######################################
