@@ -25,7 +25,7 @@ def hog_feature(image, pixel_per_cell = 8):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################   
-    pass
+    hogFeature, hogImage = feature.hog(image, pixels_per_cell=(pixel_per_cell, pixel_per_cell), visualize=True)
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -60,8 +60,21 @@ def sliding_window(image, base_score, stepSize, windowSize, pixel_per_cell=8):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
-
+    for r in range(0, H+1, stepSize):    
+        for c in range(0, W+1, stepSize):
+            window = pad_image[r:r+winH, c:c+winW]
+            score = feature.hog(
+                window,
+                pixels_per_cell=(pixel_per_cell, pixel_per_cell)
+            ).dot(base_score)
+            response_map[r//stepSize, c//stepSize] = score
+            if score > max_score:
+                max_score = score
+                maxr = r
+                maxc = c
+    maxr -= winH//2
+    maxc -= winW//2
+    response_map = resize(response_map, (H, W))
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -94,7 +107,11 @@ def pyramid(image, scale=0.9, minSize=(200, 100)):
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    minH, minW = minSize
+    while image.shape[0] > minH and image.shape[1] > minW:
+        image = rescale(image, scale)
+        current_scale *= scale
+        images.append((current_scale, image))
     ######################################
     #        END OF YOUR CODE            #
     ######################################
@@ -125,7 +142,14 @@ def pyramid_score(image,base_score, shape, stepSize=20, scale = 0.9, pixel_per_c
     #####################################
     #       START YOUR CODE HERE        #
     #####################################
-    pass
+    for scale, image in images:
+        score, r, c, response_map = sliding_window(image, base_score, stepSize, shape, pixel_per_cell)
+        if score > max_score and scale < 1:
+            max_score = score
+            maxr = r
+            maxc = c
+            max_scale = scale
+            max_response_map = response_map
     ######################################
     #        END OF YOUR CODE            #
     ######################################
