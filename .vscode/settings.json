@@ -3,4 +3,7 @@
   "editor.formatOnSaveMode": "file",
   "editor.formatOnSave": false,
   "python.analysis.typeCheckingMode": "basic",
+  "python.linting.pylintEnabled": false,
+  "python.linting.enabled": true,
+  "python.linting.banditEnabled": true,
 }
